@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('jadwal_pengangkutans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('kategori_id')->constrained('kategori_sampah')->onDelete('cascade');
+            $table->string('hari');
+            $table->string('area');
+            $table->string('petugas');
             $table->timestamps();
         });
     }
