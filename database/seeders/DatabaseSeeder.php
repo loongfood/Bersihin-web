@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriSampahSeeder::class,
             JadwalPengangkutanSeeder::class,
+            LaporanSeeder::class,
         ]);
     }
 }
