@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KategoriSampahController;
 use App\Http\Controllers\JadwalPengangkutanController;
+use App\Http\Controllers\LaporanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -22,6 +23,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('kategori-sampah', KategoriSampahController::class);
     Route::resource('jadwal-pengangkutan', JadwalPengangkutanController::class);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('laporan', LaporanController::class);
 });
 
 require __DIR__.'/auth.php';
