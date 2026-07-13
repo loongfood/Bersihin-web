@@ -13,6 +13,13 @@ return new class extends Migration
     {
         Schema::create('laporans', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('kategori_id')->constrained('kategori_sampah')->onDelete('cascade');
+            $table->string('judul');
+            $table->text('deskripsi');
+            $table->string('lokasi');
+            $table->string('foto')->nullable();
+            $table->string('status')->default('Menunggu');
             $table->timestamps();
         });
     }
