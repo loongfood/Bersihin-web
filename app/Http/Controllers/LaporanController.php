@@ -37,7 +37,7 @@ class LaporanController extends Controller
                 $q->where('status', $status);
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(5)
             ->withQueryString();
 
         $kategoriList = KategoriSampah::orderBy('nama')->get();

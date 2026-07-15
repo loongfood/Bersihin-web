@@ -25,7 +25,7 @@ class JadwalPengangkutanController extends Controller
                 $query->where('kategori_id', $kategoriId);
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(2)
             ->withQueryString();
 
         $kategoriList = KategoriSampah::orderBy('nama')->get();
