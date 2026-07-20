@@ -66,6 +66,7 @@
                     <tr class="bg-[#0C1D16] text-left">
                         <th class="p-4 text-[#9CB5A8] font-semibold text-xs uppercase tracking-wider">Kategori</th>
                         <th class="p-4 text-[#9CB5A8] font-semibold text-xs uppercase tracking-wider">Hari</th>
+                        <th class="p-4 text-[#9CB5A8] font-semibold text-xs uppercase tracking-wider">Estimasi Berikutnya</th>
                         <th class="p-4 text-[#9CB5A8] font-semibold text-xs uppercase tracking-wider">Area</th>
                         <th class="p-4 text-[#9CB5A8] font-semibold text-xs uppercase tracking-wider">Petugas</th>
                         <th class="p-4 text-[#9CB5A8] font-semibold text-xs uppercase tracking-wider">Aksi</th>
@@ -76,30 +77,35 @@
                     <tr class="border-t border-[#1C3A2C] hover:bg-[#152C21] transition">
                         <td class="p-4 text-[#F4F4EC] font-medium">{{ $item->kategori->nama ?? '-' }}</td>
                         <td class="p-4 text-[#9CB5A8]">{{ $item->hari }}</td>
+                        <td class="p-4 text-[#9CB5A8]">
+                            {{ $item->estimasiBerikutnya()->translatedFormat('l, d F Y') }}
+                        </td>
                         <td class="p-4 text-[#9CB5A8]">{{ $item->area }}</td>
                         <td class="p-4 text-[#9CB5A8]">{{ $item->petugas }}</td>
-                        <td class="p-4 space-x-2">
-                            <a href="{{ route('jadwal-pengangkutan.edit', $item) }}"
-                               class="inline-block bg-[#4C9A5B] hover:bg-[#3f8049] text-white px-3 py-1.5 rounded-md text-sm font-medium transition">
-                                Edit
-                            </a>
-                            <form action="{{ route('jadwal-pengangkutan.destroy', $item) }}" method="POST" class="inline"
-                                  onsubmit="return confirm('Yakin hapus jadwal ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-md text-sm font-medium transition">
-                                    Hapus
-                                </button>
-                            </form>
+                        <td class="p-4">
+                            <div class="flex gap-2">
+                                <a href="{{ route('jadwal-pengangkutan.edit', $item) }}"
+                                   class="flex items-center justify-center w-16 bg-[#4C9A5B] hover:bg-[#3f8049] text-white px-3 py-1.5 rounded-md text-sm font-medium transition">
+                                    Edit
+                                </a>
+                                <form action="{{ route('jadwal-pengangkutan.destroy', $item) }}" method="POST"
+                                      onsubmit="return confirm('Yakin hapus jadwal ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="flex items-center justify-center w-16 bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-md text-sm font-medium transition">
+                                        Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="p-12 text-center">
+                        <td colspan="6" class="p-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <svg class="w-12 h-12 text-[#3F5647]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                                 <p class="text-[#9CB5A8] font-medium">Belum ada jadwal pengangkutan</p>
                                 <p class="text-[#6B8577] text-sm">Atur jadwal agar petugas tahu kapan harus bertugas</p>

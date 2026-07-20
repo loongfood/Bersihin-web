@@ -18,7 +18,7 @@ class KategoriSampahController extends Controller
                 $query->where('nama', 'like', "%{$search}%");
             })
             ->latest()
-            ->paginate(3);
+            ->paginate(5);
 
         return view('kategori-sampah.index', compact('kategoriSampah', 'search'));
     }

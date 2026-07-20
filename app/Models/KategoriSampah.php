@@ -9,4 +9,9 @@ class KategoriSampah extends Model
     protected $table = 'kategori_sampah';
 
     protected $fillable = ['nama', 'deskripsi'];
+
+    public function laporan()
+    {
+        return $this->hasMany(Laporan::class, 'kategori_id');
+    }
 }

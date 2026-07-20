@@ -70,6 +70,21 @@
         </div>
         @endif
 
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-[#10241C] rounded-lg p-5 shadow-lg border border-[#1C3A2C]">
+                <h3 class="text-[#F4F4EC] font-semibold mb-4" style="font-family: 'Fraunces', serif;">Distribusi Status Laporan</h3>
+                <div class="max-h-[280px]">
+                    <canvas id="statusChart" height="220"></canvas>
+                </div>
+            </div>
+            <div class="bg-[#10241C] rounded-lg p-5 shadow-lg border border-[#1C3A2C]">
+                <h3 class="text-[#F4F4EC] font-semibold mb-4" style="font-family: 'Fraunces', serif;">Laporan per Kategori</h3>
+                <div class="max-h-[280px]">
+                    <canvas id="kategoriChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+
         <div class="bg-[#10241C] rounded-lg shadow-lg overflow-hidden border border-[#1C3A2C]">
             <div class="p-5 border-b border-[#1C3A2C]">
                 <h3 class="text-[#F4F4EC] font-semibold" style="font-family: 'Fraunces', serif;">Laporan Terbaru</h3>
@@ -113,4 +128,67 @@
         </div>
 
     </div>
+
+    @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const statusData = [{{ $laporanMenunggu }}, {{ $laporanDiproses }}, {{ $laporanSelesai }}];
+            const statusTotal = statusData.reduce((a, b) => a + b, 0);
+
+            new Chart(document.getElementById('statusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Menunggu', 'Diproses', 'Selesai'],
+                    datasets: [{
+                        data: statusData,
+                        backgroundColor: ['#EAB308', '#3B82F6', '#4C9A5B'],
+                        borderColor: '#10241C',
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#9CB5A8' } },
+                        datalabels: {
+                            color: '#fff',
+                            font: { weight: 'bold', size: 12 },
+                            formatter: (value) => {
+                                if (statusTotal === 0) return '0%';
+                                return Math.round((value / statusTotal) * 100) + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            new Chart(document.getElementById('kategoriChart'), {
+                type: 'bar',
+                data: {
+                    labels: [@foreach($laporanPerKategori as $k) '{{ $k->nama }}', @endforeach],
+                    datasets: [{
+                        label: 'Jumlah Laporan',
+                        data: [@foreach($laporanPerKategori as $k) {{ $k->laporan_count }}, @endforeach],
+                        backgroundColor: '#4C9A5B',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { ticks: { color: '#9CB5A8' }, grid: { color: '#1C3A2C' } },
+                        y: { ticks: { color: '#9CB5A8' }, grid: { color: '#1C3A2C' }, beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { display: false }
+                    }
+                }
+            });
+        });
+    </script>
+    @endpush
 </x-app-layout>

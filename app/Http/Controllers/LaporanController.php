@@ -4,22 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Laporan;
 use App\Models\KategoriSampah;
+use App\Models\JadwalPengangkutan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class LaporanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $search = $request->input('search');
         $kategoriId = $request->input('kategori_id');
         $status = $request->input('status');
 
-        $query = Laporan::with(['user', 'kategori']);
+        $query = Laporan::with(['user', 'kategori', 'jadwal', 'assignedBy']);
 
         if (!Auth::user()->hasRole('admin')) {
             $query->where('user_id', Auth::id());
@@ -41,25 +39,28 @@ class LaporanController extends Controller
             ->withQueryString();
 
         $kategoriList = KategoriSampah::orderBy('nama')->get();
+        $jadwalList = JadwalPengangkutan::orderBy('hari')->get();
 
-        return view('laporan.index', compact('laporan', 'search', 'kategoriId', 'status', 'kategoriList'));
+        return view('laporan.index', compact('laporan', 'search', 'kategoriId', 'status', 'kategoriList', 'jadwalList'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
+        if (Auth::user()->hasRole('admin')) {
+            abort(403, 'Admin tidak dapat membuat laporan.');
+        }
+
         $kategoriList = KategoriSampah::orderBy('nama')->get();
 
         return view('laporan.create', compact('kategoriList'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
+        if (Auth::user()->hasRole('admin')) {
+            abort(403, 'Admin tidak dapat membuat laporan.');
+        }
+
         $validated = $request->validate([
             'kategori_id' => 'required|exists:kategori_sampah,id',
             'judul' => 'required|string|max:255',
@@ -81,17 +82,17 @@ class LaporanController extends Controller
             ->with('success', 'Laporan berhasil dikirim.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Laporan $laporan)
     {
-        //
+        if (!Auth::user()->hasRole('admin') && $laporan->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki akses ke laporan ini.');
+        }
+
+        $laporan->load(['user', 'kategori', 'jadwal', 'assignedBy']);
+
+        return view('laporan.show', compact('laporan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Laporan $laporan)
     {
         if (!Auth::user()->hasRole('admin') && $laporan->user_id !== Auth::id()) {
@@ -103,10 +104,7 @@ class LaporanController extends Controller
         return view('laporan.edit', compact('laporan', 'kategoriList'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-   public function update(Request $request, Laporan $laporan)
+    public function update(Request $request, Laporan $laporan)
     {
         if (!Auth::user()->hasRole('admin') && $laporan->user_id !== Auth::id()) {
             abort(403, 'Anda tidak memiliki akses ke laporan ini.');
@@ -139,10 +137,28 @@ class LaporanController extends Controller
             ->with('success', 'Laporan berhasil diperbarui.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-   public function destroy(Laporan $laporan)
+    public function assign(Request $request, Laporan $laporan)
+    {
+        if (!Auth::user()->hasRole('admin')) {
+            abort(403, 'Anda tidak memiliki akses untuk melakukan ini.');
+        }
+
+        $validated = $request->validate([
+            'jadwal_id' => 'required|exists:jadwal_pengangkutans,id',
+        ]);
+
+        $laporan->update([
+            'jadwal_id' => $validated['jadwal_id'],
+            'assigned_by' => Auth::id(),
+            'assigned_at' => now(),
+            'status' => 'Diproses',
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Laporan berhasil dijadwalkan.');
+    }
+
+    public function destroy(Laporan $laporan)
     {
         if (!Auth::user()->hasRole('admin') && $laporan->user_id !== Auth::id()) {
             abort(403, 'Anda tidak memiliki akses ke laporan ini.');

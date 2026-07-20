@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('kategori-sampah', KategoriSampahController::class);
     Route::resource('jadwal-pengangkutan', JadwalPengangkutanController::class);
+    Route::patch('/laporan/{laporan}/assign', [LaporanController::class, 'assign'])->name('laporan.assign');
 });
 
 Route::middleware(['auth'])->group(function () {
