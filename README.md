@@ -8,8 +8,23 @@ Aplikasi web untuk pelaporan sampah warga dan pengelolaan jadwal pengangkutan sa
 - CRUD Kategori Sampah
 - CRUD Jadwal Pengangkutan (dengan filter kategori)
 - CRUD Laporan Sampah (dengan upload foto, filter kategori & status)
+- Penjadwalan laporan berbasis work order (admin meng-assign laporan ke jadwal pengangkutan secara manual)
+- Halaman detail laporan (deskripsi lengkap dan waktu pelaporan)
 - Dashboard statistik (berbeda untuk Admin dan Warga)
 - REST API untuk integrasi dengan aplikasi mobile
+
+## Alur Kerja
+
+### Penjadwalan Laporan (Work Order)
+
+Laporan yang masuk dari warga tidak langsung memiliki jadwal pengangkutan. Admin meninjau laporan dan secara manual memilih jadwal pengangkutan yang sesuai melalui dropdown "Assign" pada halaman daftar laporan.
+
+Saat admin melakukan assignment, sistem otomatis mencatat siapa yang meng-assign (`assigned_by`) dan kapan (`assigned_at`), serta mengubah status laporan dari **Menunggu** menjadi **Diproses**. Admin dapat mengubah status menjadi **Selesai** setelah sampah diangkut.
+
+### Pembagian Peran
+
+- **Warga**: membuat, melihat, dan mengedit laporan miliknya sendiri.
+- **Admin**: tidak dapat membuat laporan, namun dapat meninjau seluruh laporan, meng-assign jadwal pengangkutan, mengubah status, dan mengelola data master (Kategori Sampah, Jadwal Pengangkutan).
 
 ## Tech Stack
 
