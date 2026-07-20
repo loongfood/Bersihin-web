@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JadwalPengangkutan;
 use App\Models\KategoriSampah;
+use App\Models\Laporan;
 use Illuminate\Http\Request;
 
 class JadwalPengangkutanController extends Controller
@@ -25,7 +26,7 @@ class JadwalPengangkutanController extends Controller
                 $query->where('kategori_id', $kategoriId);
             })
             ->latest()
-            ->paginate(10)
+            ->paginate(5)
             ->withQueryString();
 
         $kategoriList = KategoriSampah::orderBy('nama')->get();
@@ -55,7 +56,11 @@ class JadwalPengangkutanController extends Controller
             'petugas' => 'required|string|max:255',
         ]);
 
-        JadwalPengangkutan::create($validated);
+        $jadwal = JadwalPengangkutan::create($validated);
+
+        Laporan::where('kategori_id', $jadwal->kategori_id)
+            ->whereNull('jadwal_id')
+            ->update(['jadwal_id' => $jadwal->id]);
 
         return redirect()->route('jadwal-pengangkutan.index')
             ->with('success', 'Jadwal pengangkutan berhasil ditambahkan.');
@@ -92,6 +97,10 @@ class JadwalPengangkutanController extends Controller
         ]);
 
         $jadwalPengangkutan->update($validated);
+
+        Laporan::where('kategori_id', $jadwalPengangkutan->kategori_id)
+            ->whereNull('jadwal_id')
+            ->update(['jadwal_id' => $jadwalPengangkutan->id]);
 
         return redirect()->route('jadwal-pengangkutan.index')
             ->with('success', 'Jadwal pengangkutan berhasil diperbarui.');

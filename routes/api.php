@@ -10,7 +10,13 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::apiResource('laporan', LaporanApiController::class);
+    Route::apiResource('laporan', LaporanApiController::class)->names([
+        'index' => 'api.laporan.index',
+        'store' => 'api.laporan.store',
+        'show' => 'api.laporan.show',
+        'update' => 'api.laporan.update',
+        'destroy' => 'api.laporan.destroy',
+    ]);
     Route::get('/kategori-sampah', [KategoriSampahApiController::class, 'index']);
 });
 

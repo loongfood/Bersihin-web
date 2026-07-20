@@ -19,6 +19,7 @@ class DashboardController extends Controller
             $totalKategori = KategoriSampah::count();
             $totalJadwal = JadwalPengangkutan::count();
             $laporanTerbaru = Laporan::with(['user', 'kategori'])->latest()->take(5)->get();
+            $laporanPerKategori = KategoriSampah::withCount('laporan')->get();
         } else {
             $totalLaporan = Laporan::where('user_id', Auth::id())->count();
             $laporanMenunggu = Laporan::where('user_id', Auth::id())->where('status', 'Menunggu')->count();
@@ -27,11 +28,14 @@ class DashboardController extends Controller
             $totalKategori = null;
             $totalJadwal = null;
             $laporanTerbaru = Laporan::with('kategori')->where('user_id', Auth::id())->latest()->take(5)->get();
+            $laporanPerKategori = KategoriSampah::withCount(['laporan' => function ($q) {
+                $q->where('user_id', Auth::id());
+            }])->get();
         }
 
         return view('dashboard', compact(
             'totalLaporan', 'laporanMenunggu', 'laporanDiproses', 'laporanSelesai',
-            'totalKategori', 'totalJadwal', 'laporanTerbaru'
+            'totalKategori', 'totalJadwal', 'laporanTerbaru', 'laporanPerKategori'
         ));
     }
 }
